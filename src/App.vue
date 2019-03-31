@@ -4,7 +4,6 @@
       <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <h1>Animations</h1>
         <hr>
-        <hr>
         <button class="btn btn-primary" @click="show=!show">Show alert</button>
         <transition name="fade">
           <div class="alert alert-info" v-if="show">This is some info</div>
@@ -12,8 +11,20 @@
         <transition name="slide" type="animation">
           <div class="alert alert-info" v-if="show">This is some info</div>
         </transition>
+        <!-- appear executes animation onload -->
         <transition name="fade" appear>
           <div class="alert alert-info" v-if="show">This is some info</div>
+        </transition>
+        <!-- mehrere divs animieren -->
+        <transition name="slide" type="animation">
+          <!-- eine Bedingung für mehrere elemente gleichzeitig funktioniert nicht innerhalb
+          eines Transistiontags (2x v-if='show') sondern if else. 
+          Befinden sich mehrere Elemente innerhalb eines transition Elements muss jedes Element
+          einen Key bekommen damit vue diese außeinander halten kann.
+          - mode="out-in" führt dazu dass beide Animationen nacheinander ablaufen und nicht zeitgleich. 
+          -->
+          <div class="alert alert-info" v-if="show" key="info" mode="out-in">Info</div>
+          <div class="alert alert-info" v-else key="warning">Warning</div>
         </transition>
       </div>
     </div>
@@ -96,11 +107,14 @@ export default {
     getRandom(value) {
       return Math.floor(Math.random() * value) + 1;
     },
-    getData(index, width) {
+    getData() {
       this.number = this.getRandom(100);
       this.number2 = this.getRandom(100);
       this.number3 = this.getRandom(100);
     }
+  },
+  beforeMount() {
+    this.getData();
   },
   components: {
     appTest: Test
@@ -165,7 +179,6 @@ export default {
 /**** animate width *****/
 .box {
   height: 30px;
-  width: 10px;
   background-color: red;
   transition-property: width;
   transition-duration: 1s;
